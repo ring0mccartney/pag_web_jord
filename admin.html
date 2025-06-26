@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administración de Productos - Jordan Rojas y León Tienda</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        /* Estilos específicos para admin.html o sobrescrituras de Tailwind si es necesario */
+        .admin-form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+        .admin-form-group input,
+        .admin-form-group textarea,
+        .admin-form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 1rem;
+            margin-bottom: 15px;
+            box-sizing: border-box; /* Asegura que padding no aumente el width */
+        }
+        .admin-form-group input[type="checkbox"] {
+            width: auto;
+            margin-right: 10px;
+        }
+        .admin-form-group input[type="file"] {
+            padding: 5px;
+        }
+        .admin-preview-image {
+            max-width: 150px;
+            max-height: 150px;
+            object-fit: contain;
+            margin-top: 10px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+        .admin-table th, .admin-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #eee;
+            text-align: left;
+        }
+        .admin-table th {
+            background-color: #f3f4f6;
+            font-weight: 700;
+            color: #4a5568;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+        }
+        .admin-table tbody tr:hover {
+            background-color: #f9fafb;
+        }
+        .admin-table img {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 font-inter text-gray-800 antialiased">
+    <div class="container mx-auto p-6 md:p-8 space-y-10">
+        <h1 class="text-4xl font-bold text-gray-900 mb-8 text-center">Administración de Productos</h1>
+
+        <section class="section-container bg-white p-6 rounded-lg shadow-md">
+            <h2 class="text-3xl font-bold text-gray-900 mb-6 text-center" id="form-title">Añadir Nuevo Producto</h2>
+            <form id="product-form" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <input type="hidden" id="product-id">
+
+                <div class="admin-form-group">
+                    <label for="nombre">Nombre del Producto:</label>
+                    <input type="text" id="nombre" name="nombre" required>
+                </div>
+                <div class="admin-form-group">
+                    <label for="precio">Precio:</label>
+                    <input type="number" id="precio" name="precio" step="0.01" required>
+                </div>
+
+                <div class="admin-form-group">
+                    <label for="imagen_source_type">Origen de la Imagen:</label>
+                    <select id="imagen_source_type" class="w-full p-2 border border-gray-300 rounded-md mb-3">
+                        <option value="upload">Subir Archivo</option>
+                        <option value="url">Ingresar URL</option>
+                    </select>
+                </div>
+
+                <div class="admin-form-group" id="image-upload-container">
+                    <label for="imagen_file">Imagen del Producto (Subir Archivo):</label>
+                    <input type="file" id="imagen_file" name="imagen_file" accept="image/*">
+                </div>
+
+                <div class="admin-form-group hidden" id="image-url-container">
+                    <label for="imagen_url_text">URL de la Imagen:</label>
+                    <input type="url" id="imagen_url_text" name="imagen_url_text" placeholder="https://ejemplo.com/imagen.jpg">
+                </div>
+
+                <div class="col-span-full admin-form-group">
+                     <img id="imagen_preview" class="admin-preview-image hidden" src="#" alt="Previsualización de imagen">
+                </div>
+
+
+                <input type="hidden" id="imagen_url_hidden" name="imagen_url_hidden">
+
+                <div class="admin-form-group">
+                    <label for="mas_detalles_url">URL Más Detalles:</label>
+                    <input type="url" id="mas_detalles_url" name="mas_detalles_url">
+                </div>
+                <div class="admin-form-group flex items-center col-span-full">
+                    <input type="checkbox" id="en_oferta" name="en_oferta" class="w-auto">
+                    <label for="en_oferta" class="mb-0 ml-2">¿Está en Oferta?</label>
+                </div>
+
+                <div class="admin-form-group">
+                    <label for="atributo1">Atributo 1:</label>
+                    <input type="text" id="atributo1" name="atributo1">
+                </div>
+                <div class="admin-form-group">
+                    <label for="atributo2">Atributo 2:</label>
+                    <input type="text" id="atributo2" name="atributo2">
+                </div>
+                <div class="admin-form-group">
+                    <label for="atributo3">Atributo 3:</label>
+                    <input type="text" id="atributo3" name="atributo3">
+                </div>
+                <div class="admin-form-group">
+                    <label for="atributo4">Atributo 4:</label>
+                    <input type="text" id="atributo4" name="atributo4">
+                </div>
+                <div class="admin-form-group">
+                    <label for="atributo5">Atributo 5:</label>
+                    <input type="text" id="atributo5" name="atributo5">
+                </div>
+                <div class="admin-form-group">
+                    <label for="atributo6">Atributo 6:</label>
+                    <input type="text" id="atributo6" name="atributo6">
+                </div>
+                <div class="admin-form-group">
+                    <label for="atributo7">Atributo 7:</label>
+                    <input type="text" id="atributo7" name="atributo7">
+                </div>
+
+                <div class="col-span-full flex justify-center space-x-4 mt-6">
+                    <button type="submit" class="bg-blue-600 text-white px-8 py-3 rounded-md hover:bg-blue-700 transition duration-300">Guardar Producto</button>
+                    <button type="button" id="cancel-edit-btn" class="bg-gray-400 text-white px-8 py-3 rounded-md hover:bg-gray-500 transition duration-300 hidden">Cancelar Edición</button>
+                </div>
+            </form>
+        </section>
+
+        <section class="section-container bg-white p-6 rounded-lg shadow-md mt-10">
+            <h2 class="text-3xl font-bold text-gray-900 mb-6 text-center">Lista de Productos</h2>
+            <div class="overflow-x-auto">
+                <table class="min-w-full bg-white admin-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Imagen</th>
+                            <th>Nombre</th>
+                            <th>Precio</th>
+                            <th>Oferta</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="product-table-body">
+                        <tr><td colspan="6" class="text-center py-4 text-gray-500">Cargando productos...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const productForm = document.getElementById('product-form');
+            const formTitle = document.getElementById('form-title');
+            const productIdField = document.getElementById('product-id');
+            const productNameField = document.getElementById('nombre');
+            const productPriceField = document.getElementById('precio');
+
+            // Nuevos y existentes elementos relacionados con la imagen
+            const imagenSourceType = document.getElementById('imagen_source_type');
+            const imageUploadContainer = document.getElementById('image-upload-container');
+            const imageUrlContainer = document.getElementById('image-url-container');
+            const productImageFileField = document.getElementById('imagen_file');
+            const imagenUrlTextInput = document.getElementById('imagen_url_text');
+            const productImagePreview = document.getElementById('imagen_preview');
+            const productImageUrlHidden = document.getElementById('imagen_url_hidden'); // Guarda la URL final de la imagen
+
+            const productDetailsUrlField = document.getElementById('mas_detalles_url');
+            const productOfferField = document.getElementById('en_oferta');
+            const productAttr1Field = document.getElementById('atributo1');
+            const productAttr2Field = document.getElementById('atributo2');
+            const productAttr3Field = document.getElementById('atributo3');
+            const productAttr4Field = document.getElementById('atributo4');
+            const productAttr5Field = document.getElementById('atributo5');
+            const productAttr6Field = document.getElementById('atributo6');
+            const productAttr7Field = document.getElementById('atributo7');
+            const saveProductBtn = productForm.querySelector('button[type="submit"]');
+            const cancelEditBtn = document.getElementById('cancel-edit-btn');
+            const productTableBody = document.getElementById('product-table-body');
+
+            let editingProductId = null; // Para saber si estamos editando o añadiendo
+
+            // Función para mostrar la previsualización de la imagen al subir un archivo
+            productImageFileField.addEventListener('change', function() {
+                const file = this.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        productImagePreview.src = e.target.result;
+                        productImagePreview.classList.remove('hidden');
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    productImagePreview.src = '#';
+                    productImagePreview.classList.add('hidden');
+                }
+            });
+
+            // Función para manejar el cambio de tipo de origen de imagen (subir archivo vs. URL)
+            const updateImageSourceVisibility = () => {
+                if (imagenSourceType.value === 'upload') {
+                    imageUploadContainer.classList.remove('hidden');
+                    imageUrlContainer.classList.add('hidden');
+                    imagenUrlTextInput.value = ''; // Limpiar el campo de URL al cambiar a "subir archivo"
+                    // Mantener la previsualización si ya había una imagen del modo edición
+                    if (!productImageFileField.files.length && !productImageUrlHidden.value) {
+                         productImagePreview.classList.add('hidden');
+                    }
+                } else { // 'url'
+                    imageUploadContainer.classList.add('hidden');
+                    imageUrlContainer.classList.remove('hidden');
+                    productImageFileField.value = ''; // Limpiar el input de tipo file al cambiar a "URL"
+                    // Si hay una URL en el campo de texto o en el hidden (edición), mostrarla como preview
+                    const urlToPreview = imagenUrlTextInput.value || productImageUrlHidden.value;
+                    if (urlToPreview) {
+                        productImagePreview.src = urlToPreview;
+                        productImagePreview.classList.remove('hidden');
+                    } else {
+                        productImagePreview.classList.add('hidden');
+                    }
+                }
+            };
+
+            // Event listener para el cambio en el selector de tipo de origen de imagen
+            imagenSourceType.addEventListener('change', updateImageSourceVisibility);
+
+            // Listener para el campo de texto de URL (previsualizar al escribir)
+            imagenUrlTextInput.addEventListener('input', () => {
+                if (imagenUrlTextInput.value) {
+                    productImagePreview.src = imagenUrlTextInput.value;
+                    productImagePreview.classList.remove('hidden');
+                } else {
+                    productImagePreview.classList.add('hidden');
+                }
+            });
+
+            // --- Funciones de Interacción con el Backend ---
+
+            // Cargar productos en la tabla
+            const fetchProducts = async () => {
+                productTableBody.innerHTML = '<tr><td colspan="6" class="text-center py-4 text-gray-500">Cargando productos...</td></tr>';
+                try {
+                    const response = await fetch('get_products.php');
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    const products = await response.json();
+
+                    productTableBody.innerHTML = ''; // Limpiar antes de renderizar
+                    if (products.length === 0) {
+                        productTableBody.innerHTML = '<tr><td colspan="6" class="text-center py-4 text-gray-500">No hay productos en la base de datos.</td></tr>';
+                        return;
+                    }
+
+                    products.forEach(product => {
+                        const row = `
+                            <tr data-id="${product.id}" class="border-b hover:bg-gray-50">
+                                <td class="py-3 px-4">${product.id}</td>
+                                <td class="py-3 px-4">
+                                    <img src="${product.imagen_url || 'https://placehold.co/60x60?text=No+Img'}" alt="Imagen de ${product.nombre}" class="w-12 h-12 object-cover rounded-md">
+                                </td>
+                                <td class="py-3 px-4 font-medium">${product.nombre}</td>
+                                <td class="py-3 px-4">$${parseFloat(product.precio).toFixed(2)}</td>
+                                <td class="py-3 px-4">
+                                    <span class="px-2 py-1 rounded-full text-xs font-semibold ${product.en_oferta ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}">
+                                        ${product.en_oferta ? 'Sí' : 'No'}
+                                    </span>
+                                </td>
+                                <td class="py-3 px-4 flex space-x-2">
+                                    <button class="edit-btn bg-yellow-500 text-white px-3 py-1 rounded-md hover:bg-yellow-600 transition duration-300 text-sm" data-id="${product.id}">Editar</button>
+                                    <button class="delete-btn bg-red-500 text-white px-3 py-1 rounded-md hover:bg-red-600 transition duration-300 text-sm" data-id="${product.id}">Eliminar</button>
+                                </td>
+                            </tr>
+                        `;
+                        productTableBody.insertAdjacentHTML('beforeend', row);
+                    });
+                } catch (error) {
+                    console.error('Error al cargar productos:', error);
+                    productTableBody.innerHTML = '<tr><td colspan="6" class="text-center py-4 text-red-600">Error al cargar productos.</td></tr>';
+                }
+            };
+
+            // Resetear formulario (ajustado para los nuevos campos de imagen)
+            const resetForm = () => {
+                productForm.reset();
+                productIdField.value = '';
+                formTitle.textContent = 'Añadir Nuevo Producto';
+                saveProductBtn.textContent = 'Guardar Producto';
+                cancelEditBtn.classList.add('hidden');
+                productImagePreview.classList.add('hidden');
+                productImagePreview.src = '#';
+                productImageUrlHidden.value = ''; // Limpiar URL de imagen oculta
+                imagenUrlTextInput.value = ''; // Limpiar campo de texto de URL
+                imagenSourceType.value = 'upload'; // Resetear a "Subir Archivo"
+                updateImageSourceVisibility(); // Asegurar visibilidad correcta de los campos de imagen
+                editingProductId = null;
+            };
+
+            // Manejar envío del formulario (Añadir/Editar)
+            productForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+
+                const productData = {
+                    id: editingProductId, // Solo relevante para UPDATE
+                    nombre: productNameField.value,
+                    precio: parseFloat(productPriceField.value),
+                    mas_detalles_url: productDetailsUrlField.value,
+                    en_oferta: productOfferField.checked ? 1 : 0, // 1 o 0 para booleano en PHP
+                    atributo1: productAttr1Field.value,
+                    atributo2: productAttr2Field.value,
+                    atributo3: productAttr3Field.value,
+                    atributo4: productAttr4Field.value,
+                    atributo5: productAttr5Field.value,
+                    atributo6: productAttr6Field.value,
+                    atributo7: productAttr7Field.value,
+                };
+
+                let finalImageUrl = ''; // Esta será la URL que se enviará al backend
+
+                try {
+                    // Lógica para manejar la imagen según el tipo de origen seleccionado
+                    if (imagenSourceType.value === 'upload') {
+                        if (productImageFileField.files.length > 0) {
+                            const imageUploadFormData = new FormData();
+                            imageUploadFormData.append('file', productImageFileField.files[0]);
+
+                            const uploadResponse = await fetch('upload_image.php', {
+                                method: 'POST',
+                                body: imageUploadFormData,
+                            });
+                            const uploadResult = await uploadResponse.json();
+
+                            if (uploadResult.success) {
+                                finalImageUrl = uploadResult.url; // Usa la nueva URL de la imagen subida
+                            } else {
+                                alert('Error al subir la imagen: ' + uploadResult.message);
+                                return; // No continuar si la subida de imagen falla
+                            }
+                        } else if (productImageUrlHidden.value) {
+                            // Si no se sube un nuevo archivo, pero ya hay una URL guardada (en modo edición), la usamos
+                            finalImageUrl = productImageUrlHidden.value;
+                        }
+                    } else { // Origen es 'url'
+                        finalImageUrl = imagenUrlTextInput.value; // Usa la URL ingresada directamente
+                    }
+
+                    productData.imagen_url = finalImageUrl; // Añade la URL final al objeto de datos del producto
+
+                    let url = '';
+                    let method = 'POST'; // Usaremos POST y JSON.stringify para ambos casos
+
+                    if (editingProductId) {
+                        url = 'update_product.php';
+                    } else {
+                        url = 'add_product.php';
+                    }
+
+                    const response = await fetch(url, {
+                        method: method,
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(productData)
+                    });
+                    const result = await response.json();
+
+                    if (result.success) {
+                        alert(result.message);
+                        resetForm();
+                        fetchProducts(); // Recargar la tabla
+                    } else {
+                        alert('Error: ' + result.message);
+                    }
+                } catch (error) {
+                    console.error('Error al guardar producto:', error);
+                    alert('Ocurrió un error al guardar el producto.');
+                }
+            });
+
+            // Manejar clics en la tabla (Editar/Eliminar)
+            productTableBody.addEventListener('click', async (e) => {
+                const target = e.target;
+                const productId = target.dataset.id;
+
+                if (target.classList.contains('edit-btn')) {
+                    try {
+                        const response = await fetch(`get_product_by_id.php?id=${productId}`);
+                        if (!response.ok) throw new Error('Producto no encontrado.');
+                        const productToEdit = await response.json();
+
+                        if (productToEdit && productToEdit.id) {
+                            editingProductId = productToEdit.id;
+                            formTitle.textContent = `Editar Producto (ID: ${productToEdit.id})`;
+                            saveProductBtn.textContent = 'Actualizar Producto';
+                            cancelEditBtn.classList.remove('hidden');
+
+                            productIdField.value = productToEdit.id;
+                            productNameField.value = productToEdit.nombre;
+                            productPriceField.value = parseFloat(productToEdit.precio);
+                            productDetailsUrlField.value = productToEdit.mas_detalles_url || '';
+                            productOfferField.checked = productToEdit.en_oferta;
+                            productAttr1Field.value = productToEdit.atributo1 || '';
+                            productAttr2Field.value = productToEdit.atributo2 || '';
+                            productAttr3Field.value = productToEdit.atributo3 || '';
+                            productAttr4Field.value = productToEdit.atributo4 || '';
+                            productAttr5Field.value = productToEdit.atributo5 || '';
+                            productAttr6Field.value = productToEdit.atributo6 || '';
+                            productAttr7Field.value = productToEdit.atributo7 || '';
+
+                            // Lógica para cargar la imagen en el formulario de edición
+                            if (productToEdit.imagen_url) {
+                                // Si la URL de la imagen existe, asumimos que es una URL directa
+                                imagenSourceType.value = 'url';
+                                imagenUrlTextInput.value = productToEdit.imagen_url;
+                                productImagePreview.src = productToEdit.imagen_url;
+                                productImagePreview.classList.remove('hidden');
+                                productImageUrlHidden.value = productToEdit.imagen_url; // Guarda la URL actual
+                            } else {
+                                // Si no hay URL, o es nula, seleccionamos "subir archivo"
+                                imagenSourceType.value = 'upload';
+                                productImagePreview.classList.add('hidden');
+                                productImagePreview.src = '#';
+                                productImageUrlHidden.value = '';
+                            }
+                            updateImageSourceVisibility(); // Asegurarse de que el input correcto esté visible
+
+                            productForm.scrollIntoView({ behavior: 'smooth' });
+
+                        } else {
+                            alert('No se pudo cargar la información del producto para editar.');
+                        }
+                    } catch (error) {
+                        console.error('Error al obtener producto para editar:', error);
+                        alert('Hubo un error al cargar los datos del producto.');
+                    }
+                } else if (target.classList.contains('delete-btn')) {
+                    if (confirm('¿Estás seguro de que quieres eliminar este producto PERMANENTEMENTE?')) {
+                        try {
+                            const response = await fetch('delete_product.php', {
+                                method: 'DELETE',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ id: productId }),
+                            });
+                            const result = await response.json();
+
+                            if (result.success) {
+                                alert(result.message);
+                                fetchProducts(); // Recargar tabla
+                            } else {
+                                alert('Error al eliminar: ' + result.message);
+                            }
+                        } catch (error) {
+                            console.error('Error al eliminar producto:', error);
+                            alert('Ocurrió un error al eliminar el producto.');
+                        }
+                    }
+                }
+            });
+
+            // Cancelar edición
+            cancelEditBtn.addEventListener('click', resetForm);
+
+            // Cargar productos al iniciar la página de administración
+            fetchProducts();
+            // Ejecutar para configurar la visibilidad inicial del campo de imagen
+            updateImageSourceVisibility();
+        });
+    </script>
+</body>
+</html>
